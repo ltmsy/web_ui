@@ -1,0 +1,197 @@
+ 客户端API接口文档
+
+## 基础信息
+- 基础路径: http://localhost:8080/api/client/
+
+
+## 接口列表
+
+### 1. 主页接口
+GET /{groupNo}
+- 功能: 获取主页信息，包括系统配置和游客信息
+- 参数:
+  * groupNo: 路径参数，组号
+- 返回:{
+    "code": 200,
+    "message": "success",
+    "data": {
+        "configs": [
+            {
+                "configKey": "LOGO_URL",
+                "configValue": "http://localhost:8080/api/upload/level/2025/01/30/5f142d9a-88e6-49f3-be61-1d3682409f98.png"
+            },
+            {
+                "configKey": "COURSE_IMAGE_URL",
+                "configValue": "http://localhost:8080/api/upload/level/2025/01/30/43abf2f0-2bc5-45f5-ad59-90ff6fc904c9.png"
+            },
+            {
+                "configKey": "PLAYER_BG_URL",
+                "configValue": "http://localhost:8080/api/upload/level/2025/01/30/db776542-06b3-496d-9f3c-0b2a10bc3883.jpg"
+            },
+            {
+                "configKey": "TEACHER_INTRO_URL",
+                "configValue": "http://localhost:8080/api/upload/level/2025/01/30/3dba0b8e-f0e0-4fa1-8dc1-cfcd3bcf0c24.png"
+            },
+            {
+                "configKey": "ALLOW_VISITOR_CHAT",
+                "configValue": "true"
+            },
+            {
+                "configKey": "NEED_AUDIT",
+                "configValue": "true"
+            },
+            {
+                "configKey": "FAKE_ONLINE_COUNT",
+                "configValue": "0"
+            },
+            {
+                "configKey": "H5_PULL_URL",
+                "configValue": "http://pull.fyeyryt.com/live/benji.m3u8"
+            },
+            {
+                "configKey": "WEB_PULL_URL",
+                "configValue": "http://pull.fyeyryt.com/live/benji.flv"
+            },
+            {
+                "configKey": "ANNOUNCEMENT",
+                "configValue": "欢迎来到财经直播间jjas很快就负担积分卡尽快v你就能撒卡纳克"
+            },
+            {
+                "configKey": "NEED_LOGIN",
+                "configValue": "false"
+            }
+        ],
+        "userInfo": {
+            "id": 20,
+            "userName": "NwiXnX",
+            "groupNo": "1001",
+            "levelIcon": "http://localhost:8080/api/upload/level/2025/01/30/fe144fee-2d47-47b5-ab10-b78d1e1e2ea2.gif",
+            "userType": 1
+        }
+    }
+}
+
+
+### 2. 登录接口
+POST /login
+- 功能: 用户登录
+- 请求体:
+json
+{
+"username": "用户名",
+"password": "密码"
+}
+{
+    "code": 200,
+    "message": "success",
+    "data": {
+        "token": "eyJhbGciOiJIUzUxMiJ9.eyJ1c2VyVHlwZSI6MywiZXhwIjoxNzM4ODU1MjU5LCJ1c2VySWQiOjEsImdyb3VwTm8iOiIxMDAwIiwidXNlcm5hbWUiOiJhZG1pbiJ9.V9Gmz84AtK31xTh-3uBhMAihp43aw6_ggtdvIvkpQt0gJhAv97K-kb3uLF-rvarNdbqTRDHtAyc2Y1V3Cn9j9A",
+        "configs": [
+            {
+                "configKey": "LOGO_URL",
+                "configValue": "http://localhost:8080/api/upload/level/2025/01/30/5f142d9a-88e6-49f3-be61-1d3682409f98.png"
+            },
+            {
+                "configKey": "COURSE_IMAGE_URL",
+                "configValue": "http://localhost:8080/api/upload/level/2025/01/30/43abf2f0-2bc5-45f5-ad59-90ff6fc904c9.png"
+            },
+            {
+                "configKey": "PLAYER_BG_URL",
+                "configValue": "http://localhost:8080/api/upload/level/2025/01/30/db776542-06b3-496d-9f3c-0b2a10bc3883.jpg"
+            },
+            {
+                "configKey": "TEACHER_INTRO_URL",
+                "configValue": "http://localhost:8080/api/upload/level/2025/01/30/3dba0b8e-f0e0-4fa1-8dc1-cfcd3bcf0c24.png"
+            },
+            {
+                "configKey": "ALLOW_VISITOR_CHAT",
+                "configValue": "true"
+            },
+            {
+                "configKey": "NEED_AUDIT",
+                "configValue": "true"
+            },
+            {
+                "configKey": "FAKE_ONLINE_COUNT",
+                "configValue": "0"
+            },
+            {
+                "configKey": "H5_PULL_URL",
+                "configValue": "http://pull.fyeyryt.com/live/benji.m3u8"
+            },
+            {
+                "configKey": "WEB_PULL_URL",
+                "configValue": "http://pull.fyeyryt.com/live/benji.flv"
+            },
+            {
+                "configKey": "ANNOUNCEMENT",
+                "configValue": "欢迎来到财经直播间jjas很快就负担积分卡尽快v你就能撒卡纳克"
+            },
+            {
+                "configKey": "NEED_LOGIN",
+                "configValue": "false"
+            }
+        ],
+        "userInfo": {
+            "id": 1,
+            "userName": "admin",
+            "groupNo": "1000",
+            "levelIcon": null,
+            "userType": 3
+        },
+        "fakeIdentities": [
+            {
+                "id": 1,
+                "identityName": "分析师张三f",
+                "groupNo": "1001",
+                "levelId": 1,
+                "levelIcon": "http://localhost:8080/api/upload/level/2025/01/30/fe144fee-2d47-47b5-ab10-b78d1e1e2ea2.gif",
+                "creatorId": 1,
+                "creatorName": "superadmin",
+                "createTime": "2024-03-21T10:00:00"
+            },
+            {
+                "id": 5,
+                "identityName": "admin机器人",
+                "groupNo": "1000",
+                "levelId": 2,
+                "levelIcon": "http://localhost:8080/api/upload/level/2025/01/30/fe144fee-2d47-47b5-ab10-b78d1e1e2ea2.gif",
+                "creatorId": 1,
+                "creatorName": "admin",
+                "createTime": "2025-01-28T16:28:05"
+            }
+        ]
+    }
+}
+
+
+### 3. 登出接口
+POST /logout
+- 功能: 用户登出，清除token
+- 需要认证: 是
+- 返回:
+json
+{
+"code": 200,
+"msg": "success"
+}
+
+
+### 4. 签到接口
+POST /checkin
+- 功能: 用户签到
+- 需要认证: 是
+- 需要角色: MEMBER
+- 参数:
+  * userId: 用户ID (query参数)
+- 返回:
+json
+{
+"code": 200,
+"msg": "success"
+}
+
+## 特殊说明
+1. 主页接口会根据IP自动创建游客账号
+2. 登录token会存储在Redis中，有效期30天
+4. 配置信息只返回 WEB、LIVE 两个分组的非空配置
