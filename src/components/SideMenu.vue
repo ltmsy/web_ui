@@ -29,6 +29,7 @@
 import { ref, computed } from 'vue';
 import { useConfigStore } from '@/stores/config';
 import { storeToRefs } from 'pinia';
+import { checkin } from '@/api/chat';
 
 const store = useConfigStore();
 const { courseImageUrl, teacherIntroUrl, userInfo, token, announcement } = storeToRefs(store);
@@ -49,10 +50,17 @@ const handleSignIn = async () => {
   }
 
   try {
-    await store.checkin(userInfo.value.id);
-    alert('签到成功！');
+    const { data } = await checkin();
+    alert(data.message);
   } catch (error) {
-    alert('签到失败：' + error.message);
+    console.error('签到失败:', error);
+    if (error.response?.status === 401) {
+      alert('请先登录');
+    } else if (error.response?.status === 400) {
+      alert(error.response.data.message);
+    } else {
+      alert('签到失败，请稍后重试');
+    }
   }
 };
 

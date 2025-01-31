@@ -59,4 +59,19 @@ export const auditMessage = async (params) => {
     console.error('审核请求失败:', error);
     throw error;
   }
+}
+
+// 添加签到接口
+export const checkin = async () => {
+  try {
+    const response = await axios.post('http://localhost:8080/api/client/checkin', null, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.error('签到请求失败:', error);
+    throw error;
+  }
 } 
