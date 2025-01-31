@@ -89,6 +89,7 @@ const messagesContainer = ref(null);
 const messageInput = ref('');
 const showEmoji = ref(false);
 const onlineCount = ref(0);
+const onlineCountTimer = ref(null);
 const selectedIdentity = ref(configStore.currentFakeIdentity);
 const autoScroll = ref(true);
 
@@ -228,6 +229,43 @@ const handleScroll = () => {
   }
 };
 
+// 生成随机在线人数
+const generateOnlineCount = () => {
+  const fakeCount = configStore.fakeOnlineCount;
+  
+  if (fakeCount === 0) {
+    // 如果配置为0，随机生成1-15的数字
+    onlineCount.value = Math.floor(Math.random() * 15) + 1;
+  } else if (fakeCount >= 1000) {
+    // 如果大于1000，上下浮动200
+    const min = fakeCount - 200;
+    const max = fakeCount + 200;
+    onlineCount.value = Math.floor(Math.random() * (max - min + 1)) + min;
+  } else {
+    // 其他情况直接使用配置值
+    onlineCount.value = fakeCount;
+  }
+};
+
+// 启动在线人数更新定时器
+const startOnlineCountTimer = () => {
+  // 先生成一次初始值
+  generateOnlineCount();
+  
+  // 设置5秒定时器
+  onlineCountTimer.value = setInterval(() => {
+    generateOnlineCount();
+  }, 5000);
+};
+
+// 停止在线人数更新定时器
+const stopOnlineCountTimer = () => {
+  if (onlineCountTimer.value) {
+    clearInterval(onlineCountTimer.value);
+    onlineCountTimer.value = null;
+  }
+};
+
 // 初始化
 onMounted(async () => {
   console.log('聊天室组件挂载, 用户信息:', userInfo.value);
@@ -263,6 +301,9 @@ onMounted(async () => {
 
     // 添加滚动事件监听
     messagesContainer.value?.addEventListener('scroll', handleScroll);
+
+    // 启动在线人数更新
+    startOnlineCountTimer();
   } catch (error) {
     console.error('初始化聊天室失败:', error);
     console.error('错误详情:', error.response || error);
@@ -302,6 +343,9 @@ onUnmounted(() => {
 
   // 移除滚动事件监听
   messagesContainer.value?.removeEventListener('scroll', handleScroll);
+
+  // 停止在线人数更新
+  stopOnlineCountTimer();
 });
 
 // 监听消息可见性变化
@@ -312,6 +356,11 @@ watchEffect(() => {
 // 监听发送权限变化
 watchEffect(() => {
   console.log('发送消息权限状态:', canSendMessage.value);
+});
+
+// 监听配置变化，重新生成在线人数
+watch(() => configStore.fakeOnlineCount, () => {
+  generateOnlineCount();
 });
 </script>
 
