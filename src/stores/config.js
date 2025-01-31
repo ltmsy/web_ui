@@ -11,6 +11,11 @@ export const useConfigStore = defineStore('config', {
     token: localStorage.getItem('token')
   }),
 
+  persist: {
+    enabled: true,
+    paths: ['userInfo', 'token', 'configs']
+  },
+
   getters: {
     logoUrl: state => state.configs.LOGO_URL,
     courseImageUrl: state => state.configs.COURSE_IMAGE_URL,
@@ -35,16 +40,15 @@ export const useConfigStore = defineStore('config', {
             acc[curr.configKey] = curr.configValue
             return acc
           }, {})
+          
           this.userInfo = data.data.userInfo
           
-          if (this.needLogin && !this.token) {
-            router.push('/login')
-          }
+          console.log('配置信息已更新')
         }
       } catch (error) {
         this.error = error.message
         if (error.response?.status === 401) {
-          this.logout()
+          this.clearUserData()
         }
       } finally {
         this.loading = false
@@ -63,10 +67,12 @@ export const useConfigStore = defineStore('config', {
           this.userInfo = data.data.userInfo
           
           localStorage.setItem('token', this.token)
+          console.log('登录成功，store已更新')
         } else {
           throw new Error(data.message || '登录失败')
         }
       } catch (error) {
+        console.error('登录失败:', error)
         throw error
       }
     },
@@ -77,12 +83,21 @@ export const useConfigStore = defineStore('config', {
       } catch (error) {
         console.error('登出失败:', error)
       } finally {
-        this.token = null
-        this.userInfo = null
-        localStorage.removeItem('token')
+        this.clearUserData()
+        await this.fetchHomeInfo()
         
-        window.location.href = `${window.location.origin}/login`
+        if (this.needLogin) {
+          window.location.href = `${window.location.origin}/login`
+        } else {
+          window.location.href = window.location.origin
+        }
       }
+    },
+
+    clearUserData() {
+      this.token = null
+      this.userInfo = null
+      localStorage.removeItem('token')
     }
   }
 }) 

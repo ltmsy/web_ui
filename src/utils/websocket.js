@@ -11,20 +11,60 @@ export class WebSocketManager {
   }
 
   connect() {
-    const url = `${CHAT_CONFIG.WS_URL}?userId=${this.params.userId}&userType=${this.params.userType}&groupCode=${this.params.groupCode}`
-    this.ws = new WebSocket(url)
+    // 确保参数都存在且转换为字符串
+    const userId = this.params.userId?.toString() || '';
+    const userType = this.params.userType?.toString() || '';
+    const groupCode = this.params.groupCode?.toString() || '';
 
-    this.ws.onmessage = (event) => {
-      const data = JSON.parse(event.data)
-      this.onMessage(data)
-    }
+    // 构建 WebSocket URL
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsHost = window.location.hostname;
+    const wsPort = '8085'; // WebSocket 服务器端口
+    
+    const url = `${wsProtocol}//${wsHost}:${wsPort}${CHAT_CONFIG.WS_URL}?userId=${userId}&userType=${userType}&groupCode=${groupCode}`;
+    
+    console.log('尝试连接WebSocket:', url);
+    
+    try {
+      this.ws = new WebSocket(url);
 
-    this.ws.onerror = (error) => {
-      this.onError(error)
-    }
+      this.ws.onmessage = (event) => {
+        try {
+          console.log('WebSocket原始消息:', event.data);
+          let data = event.data;
+          
+          // 如果是字符串，尝试解析JSON
+          if (typeof data === 'string') {
+            data = JSON.parse(data);
+          }
 
-    this.ws.onclose = () => {
-      this.reconnect()
+          // 验证消息格式
+          if (!data || !data.messageId) {
+            console.warn('收到无效消息格式:', data);
+            return;
+          }
+
+          // 调用回调函数
+          this.onMessage(data);
+        } catch (error) {
+          console.error('WebSocket消息处理错误:', error);
+          console.error('原始消息:', event.data);
+          this.onError(error);
+        }
+      };
+
+      this.ws.onerror = (error) => {
+        console.error('WebSocket连接错误:', error);
+        this.onError(error);
+      };
+
+      this.ws.onclose = () => {
+        console.log('WebSocket连接关闭，尝试重连');
+        this.reconnect();
+      };
+    } catch (error) {
+      console.error('WebSocket连接创建失败:', error);
+      this.onError(error);
     }
   }
 

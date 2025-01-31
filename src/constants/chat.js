@@ -13,6 +13,6 @@ export const MESSAGE_STATUS = {
 }
 
 export const CHAT_CONFIG = {
-  WS_URL: 'ws://localhost:8085/api/ws/chat',
+  WS_URL: '/api/ws/chat',
   API_URL: '/api/v1'
 } 

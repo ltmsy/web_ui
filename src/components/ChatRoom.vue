@@ -14,13 +14,23 @@
         <div class="content">
           {{ message.content }}
           <!-- 审核按钮 -->
-          <div v-if="canAudit(message) && message.status === MESSAGE_STATUS.PENDING" class="audit-actions">
-            <button @click="handleAudit(message, MESSAGE_STATUS.APPROVED)" class="audit-btn approve">通过</button>
-            <button @click="handleAudit(message, MESSAGE_STATUS.REJECTED)" class="audit-btn reject">撤销</button>
+          <div v-if="canAudit(message)" class="audit-actions">
+            <!-- 只有在待审核状态时显示通过按钮 -->
+            <button 
+              v-if="message.status === MESSAGE_STATUS.PENDING"
+              @click="handleAudit(message, MESSAGE_STATUS.APPROVED)" 
+              class="audit-btn approve"
+            >
+              通过
+            </button>
+            <!-- 撤销按钮始终显示 -->
+            <button 
+              @click="handleAudit(message, MESSAGE_STATUS.REJECTED)" 
+              class="audit-btn reject"
+            >
+              撤销
+            </button>
           </div>
-          <!-- 消息状态 -->
-          <span v-if="message.status === MESSAGE_STATUS.PENDING" class="status pending">待审核</span>
-          <span v-if="message.status === MESSAGE_STATUS.REJECTED" class="status rejected">已撤销</span>
         </div>
       </div>
     </div>
@@ -102,6 +112,10 @@ const handleWebSocketError = (error) => {
 const sendMessage = async () => {
   if (!messageInput.value.trim() || !userInfo.value) return;
 
+  // 根据用户类型和审核配置决定消息状态
+  const needAudit = configStore.needAudit && 
+    [USER_TYPES.VISITOR, USER_TYPES.MEMBER].includes(userInfo.value.userType);
+
   const message = {
     messageId: Date.now().toString(),
     userId: userInfo.value.id,
@@ -111,8 +125,10 @@ const sendMessage = async () => {
     content: messageInput.value.trim(),
     iconUrl: userInfo.value.levelIcon,
     timestamp: Date.now(),
-    status: userInfo.value.userType >= USER_TYPES.ADMIN ? 
-      MESSAGE_STATUS.APPROVED : MESSAGE_STATUS.PENDING
+    // 如果需要审核且是游客/普通会员，则设置为待审核状态
+    // 管理员及以上用户的消息直接通过
+    // 如果不需要审核，所有消息直接通过
+    status: needAudit ? MESSAGE_STATUS.PENDING : MESSAGE_STATUS.APPROVED
   };
 
   console.log('准备发送消息:', message);
@@ -166,27 +182,32 @@ onMounted(async () => {
   await waitForUserInfo();
 
   try {
+    // 加载历史消息
+    console.log('准备加载历史消息，参数:', {
+      userId: userInfo.value?.id,
+      userType: userInfo.value?.userType,
+      groupCode: userInfo.value?.groupNo
+    });
+
+    await chatStore.loadHistoryMessages({
+      userId: userInfo.value?.id,
+      userType: userInfo.value?.userType,
+      groupCode: userInfo.value?.groupNo
+    });
+
     // 初始化WebSocket连接
     console.log('开始初始化WebSocket连接');
     chatStore.initWebSocket({
-      userId: userInfo.value.id,
-      userType: userInfo.value.userType,
-      groupCode: userInfo.value.groupNo
+      userId: userInfo.value?.id,
+      userType: userInfo.value?.userType,
+      groupCode: userInfo.value?.groupNo
     });
     console.log('WebSocket连接初始化完成');
-
-    // 加载历史消息
-    console.log('开始加载历史消息');
-    await chatStore.loadHistoryMessages({
-      userId: userInfo.value.id,
-      userType: userInfo.value.userType,
-      groupCode: userInfo.value.groupNo
-    });
-    console.log('历史消息加载完成');
 
     scrollToBottom();
   } catch (error) {
     console.error('初始化聊天室失败:', error);
+    console.error('错误详情:', error.response || error);
   }
 });
 
@@ -351,22 +372,5 @@ button {
 .audit-btn.reject {
   background: #f44336;
   color: white;
-}
-
-.status {
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 2px;
-  margin-left: 8px;
-}
-
-.status.pending {
-  background: #fff3e0;
-  color: #f57c00;
-}
-
-.status.rejected {
-  background: #ffebee;
-  color: #d32f2f;
 }
 </style> 
