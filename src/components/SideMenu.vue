@@ -31,7 +31,7 @@ import { useConfigStore } from '@/stores/config';
 import { storeToRefs } from 'pinia';
 
 const store = useConfigStore();
-const { courseImageUrl, teacherIntroUrl, userInfo, announcement } = storeToRefs(store);
+const { courseImageUrl, teacherIntroUrl, userInfo, token, announcement } = storeToRefs(store);
 
 const showSchedule = ref(false);
 const showTeacherInfo = ref(false);
@@ -43,15 +43,16 @@ const modalImage = computed(() => {
 });
 
 const handleSignIn = async () => {
-  if (userInfo.value?.id) {
-    try {
-      await store.checkin(userInfo.value.id);
-      alert('签到成功！');
-    } catch (error) {
-      alert('签到失败：' + error.message);
-    }
-  } else {
+  if (!token.value) {
     alert('请先登录！');
+    return;
+  }
+
+  try {
+    await store.checkin(userInfo.value.id);
+    alert('签到成功！');
+  } catch (error) {
+    alert('签到失败：' + error.message);
   }
 };
 

@@ -1,12 +1,14 @@
 import { defineStore } from 'pinia'
-import { getHomeInfo } from '@/api/client'
+import { getHomeInfo, login as loginApi, logout } from '@/api/client'
+import { useRouter } from 'vue-router'
 
 export const useConfigStore = defineStore('config', {
   state: () => ({
     configs: {},
     userInfo: null,
     loading: false,
-    error: null
+    error: null,
+    token: localStorage.getItem('token')
   }),
 
   getters: {
@@ -29,17 +31,57 @@ export const useConfigStore = defineStore('config', {
       try {
         const { data } = await getHomeInfo(groupNo)
         if (data.code === 200) {
-          // 将配置数组转换为对象格式
           this.configs = data.data.configs.reduce((acc, curr) => {
             acc[curr.configKey] = curr.configValue
             return acc
           }, {})
           this.userInfo = data.data.userInfo
+          
+          if (this.needLogin && !this.token) {
+            router.push('/login')
+          }
         }
       } catch (error) {
         this.error = error.message
+        if (error.response?.status === 401) {
+          this.logout()
+        }
       } finally {
         this.loading = false
+      }
+    },
+
+    async login(username, password) {
+      try {
+        const { data } = await loginApi(username, password)
+        if (data.code === 200) {
+          this.token = data.data.token
+          this.configs = data.data.configs.reduce((acc, curr) => {
+            acc[curr.configKey] = curr.configValue
+            return acc
+          }, {})
+          this.userInfo = data.data.userInfo
+          
+          localStorage.setItem('token', this.token)
+        } else {
+          throw new Error(data.message || '登录失败')
+        }
+      } catch (error) {
+        throw error
+      }
+    },
+
+    async logout() {
+      try {
+        await logout()
+      } catch (error) {
+        console.error('登出失败:', error)
+      } finally {
+        this.token = null
+        this.userInfo = null
+        localStorage.removeItem('token')
+        
+        window.location.href = `${window.location.origin}/login`
       }
     }
   }

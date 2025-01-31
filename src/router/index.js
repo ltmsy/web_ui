@@ -1,10 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import PCLiveRoom from '../views/PC/LiveRoom.vue'
+import Login from '../views/Login.vue'
 
 const routes = [
   {
     path: '/',
     redirect: '/pc/live'
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
   },
   {
     path: '/pc/live',

@@ -15,6 +15,11 @@ onMounted(async () => {
   // 获取配置信息
   await store.fetchHomeInfo();
   
+  // 只有在需要登录且没有token的情况下才返回
+  if (store.needLogin && !store.token) {
+    return;
+  }
+  
   // 根据设备类型自动跳转
   const currentRoute = router.currentRoute.value.path;
   if (isMobile()) {
