@@ -2,6 +2,12 @@
   <div class="chat-room">
     <div class="chat-header">
       <span>在线人数：{{ onlineCount }}</span>
+      <div class="scroll-control">
+        <label>
+          <input type="checkbox" v-model="autoScroll">
+          自动滚动
+        </label>
+      </div>
     </div>
     
     <div class="chat-messages" ref="messagesContainer">
@@ -36,6 +42,20 @@
     </div>
 
     <div class="chat-input">
+      <!-- 虚假身份选择器 -->
+      <div v-if="configStore.canUseFakeIdentity" class="fake-identity-selector">
+        <select v-model="selectedIdentity">
+          <option :value="null">使用真实身份</option>
+          <option 
+            v-for="identity in configStore.fakeIdentities" 
+            :key="identity.id"
+            :value="identity"
+          >
+            {{ identity.identityName }}
+          </option>
+        </select>
+      </div>
+
       <div class="emoji-panel" v-if="showEmoji">
         <span v-for="emoji in emojis" :key="emoji" @click="insertEmoji(emoji)">{{ emoji }}</span>
       </div>
@@ -55,7 +75,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watchEffect, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watchEffect, watch, nextTick } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/stores/config';
 import { useChatStore } from '@/stores/chat';
@@ -69,6 +89,8 @@ const messagesContainer = ref(null);
 const messageInput = ref('');
 const showEmoji = ref(false);
 const onlineCount = ref(0);
+const selectedIdentity = ref(configStore.currentFakeIdentity);
+const autoScroll = ref(true);
 
 const emojis = ['😊', '😂', '🤔', '👍', '❤️', '😎', '🎉', '👏'];
 
@@ -100,6 +122,10 @@ const canAudit = (message) => {
 const handleWebSocketMessage = (message) => {
   console.log('收到WebSocket消息:', message);
   chatStore.handleMessage(message);
+  // 消息处理完后滚动
+  nextTick(() => {
+    scrollToBottom();
+  });
 };
 
 // WebSocket错误处理
@@ -108,26 +134,30 @@ const handleWebSocketError = (error) => {
   chatStore.handleError(error);
 };
 
-// 发送消息
+// 监听身份选择变化
+watch(selectedIdentity, (newIdentity) => {
+  configStore.setCurrentFakeIdentity(newIdentity);
+});
+
+// 修改发送消息方法
 const sendMessage = async () => {
   if (!messageInput.value.trim() || !userInfo.value) return;
 
-  // 根据用户类型和审核配置决定消息状态
   const needAudit = configStore.needAudit && 
     [USER_TYPES.VISITOR, USER_TYPES.MEMBER].includes(userInfo.value.userType);
 
+  // 使用虚假身份或真实身份
+  const identity = selectedIdentity.value || userInfo.value;
+
   const message = {
     messageId: Date.now().toString(),
-    userId: userInfo.value.id,
-    userName: userInfo.value.userName,
-    userType: userInfo.value.userType,
-    groupCode: userInfo.value.groupNo,
+    userId: userInfo.value.id, // 保留真实用户ID用于权限判断
+    userName: identity.identityName || identity.userName, // 使用选择的身份名称
+    userType: userInfo.value.userType, // 保留真实用户类型用于权限判断
+    groupCode: identity.groupNo || userInfo.value.groupNo,
     content: messageInput.value.trim(),
-    iconUrl: userInfo.value.levelIcon,
+    iconUrl: identity.levelIcon || userInfo.value.levelIcon,
     timestamp: Date.now(),
-    // 如果需要审核且是游客/普通会员，则设置为待审核状态
-    // 管理员及以上用户的消息直接通过
-    // 如果不需要审核，所有消息直接通过
     status: needAudit ? MESSAGE_STATUS.PENDING : MESSAGE_STATUS.APPROVED
   };
 
@@ -163,7 +193,7 @@ const formatTime = (timestamp) => {
 };
 
 const scrollToBottom = () => {
-  if (messagesContainer.value) {
+  if (autoScroll.value && messagesContainer.value) {
     messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
   }
 };
@@ -171,6 +201,31 @@ const scrollToBottom = () => {
 const insertEmoji = (emoji) => {
   messageInput.value += emoji;
   showEmoji.value = false;
+};
+
+// 监听消息列表变化，自动滚动
+watch(() => visibleMessages.value, () => {
+  // 使用 nextTick 确保 DOM 更新后再滚动
+  nextTick(() => {
+    scrollToBottom();
+  });
+}, { deep: true, immediate: true });
+
+// 监听手动滚动事件
+const handleScroll = () => {
+  if (!messagesContainer.value) return;
+  
+  const { scrollTop, scrollHeight, clientHeight } = messagesContainer.value;
+  const isAtBottom = scrollHeight - scrollTop - clientHeight < 50; // 允许50px的误差
+  
+  // 如果用户手动滚动到底部，自动开启自动滚动
+  if (isAtBottom && !autoScroll.value) {
+    autoScroll.value = true;
+  }
+  // 如果用户向上滚动，关闭自动滚动
+  else if (!isAtBottom && autoScroll.value) {
+    autoScroll.value = false;
+  }
 };
 
 // 初始化
@@ -205,6 +260,9 @@ onMounted(async () => {
     console.log('WebSocket连接初始化完成');
 
     scrollToBottom();
+
+    // 添加滚动事件监听
+    messagesContainer.value?.addEventListener('scroll', handleScroll);
   } catch (error) {
     console.error('初始化聊天室失败:', error);
     console.error('错误详情:', error.response || error);
@@ -241,6 +299,9 @@ const waitForUserInfo = () => {
 onUnmounted(() => {
   console.log('聊天室组件卸载，清理资源');
   chatStore.cleanup();
+
+  // 移除滚动事件监听
+  messagesContainer.value?.removeEventListener('scroll', handleScroll);
 });
 
 // 监听消息可见性变化
@@ -275,6 +336,13 @@ watchEffect(() => {
   flex: 1;
   overflow-y: auto;
   padding: 10px;
+  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+
+/* Webkit (Chrome, Safari, etc) */
+.chat-messages::-webkit-scrollbar {
+  display: none;
 }
 
 .message {
@@ -372,5 +440,36 @@ button {
 .audit-btn.reject {
   background: #f44336;
   color: white;
+}
+
+.fake-identity-selector {
+  margin-bottom: 10px;
+}
+
+.fake-identity-selector select {
+  width: 200px;
+  padding: 5px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+.scroll-control {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  color: #666;
+}
+
+.scroll-control input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+.scroll-control label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
 }
 </style> 

@@ -8,12 +8,14 @@ export const useConfigStore = defineStore('config', {
     userInfo: null,
     loading: false,
     error: null,
-    token: localStorage.getItem('token')
+    token: localStorage.getItem('token'),
+    fakeIdentities: [],
+    currentFakeIdentity: null
   }),
 
   persist: {
     enabled: true,
-    paths: ['userInfo', 'token', 'configs']
+    paths: ['userInfo', 'token', 'configs', 'currentFakeIdentity']
   },
 
   getters: {
@@ -27,7 +29,10 @@ export const useConfigStore = defineStore('config', {
     needLogin: state => state.configs.NEED_LOGIN === 'true',
     webPullUrl: state => state.configs.WEB_PULL_URL,
     h5PullUrl: state => state.configs.H5_PULL_URL,
-    fakeOnlineCount: state => parseInt(state.configs.FAKE_ONLINE_COUNT || '0')
+    fakeOnlineCount: state => parseInt(state.configs.FAKE_ONLINE_COUNT || '0'),
+    canUseFakeIdentity: (state) => {
+      return state.userInfo && [3, 4, 5].includes(state.userInfo.userType);
+    }
   },
 
   actions: {
@@ -65,6 +70,7 @@ export const useConfigStore = defineStore('config', {
             return acc
           }, {})
           this.userInfo = data.data.userInfo
+          this.fakeIdentities = data.data.fakeIdentities || []
           
           localStorage.setItem('token', this.token)
           console.log('登录成功，store已更新')
@@ -94,9 +100,15 @@ export const useConfigStore = defineStore('config', {
       }
     },
 
+    setCurrentFakeIdentity(identity) {
+      this.currentFakeIdentity = identity
+    },
+
     clearUserData() {
       this.token = null
       this.userInfo = null
+      this.fakeIdentities = []
+      this.currentFakeIdentity = null
       localStorage.removeItem('token')
     }
   }
