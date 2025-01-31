@@ -1,0 +1,187 @@
+# 聊天服务 API 文档
+
+## 基本信息
+- 基础路径: `/api/v1`
+- WebSocket路径: `/api/ws/chat`
+- 内容类型: `application/json`
+
+## 用户类型
+- 1: 游客
+- 2: 普通会员
+- 3: 超管
+- 4: 组长
+- 5: 组员
+
+## 消息状态
+- 1: 待审核  //PENDING
+- 2: 已通过  //APPROVED
+- 3: 已撤销  //REJECTED
+
+## WebSocket 连接
+
+### 连接参数
+- 连接URL: `ws://localhost:{8085}/api/ws/chat`
+- 查询参数:
+  - `userId`: 用户ID (必填)
+  - `userType`: 用户类型 (必填)
+  - `groupCode`: groupNo组号 (可选)
+
+
+
+
+## 消息格式
+
+### 发送消息
+{
+    "messageId": "消息ID (时间戳)",
+    "userId": "发送者ID",
+    "userName": "用户名",
+    "userType": "用户类型",
+    "groupCode": "组号groupNo",
+    "content": "消息内容",
+    "iconUrl":"等级标签"
+    "timestamp": "发送时间戳",
+    "status": "消息状态"
+}
+
+### 消息权限规则
+1. 消息显示规则:
+   - 消息发送者可以看到自己的所有消息
+   - 管理员/组长/组员可以看到所有已通过的消息
+   - 超管可以看到所有消息
+   - 组长可以看到本组的所有消息
+
+2. 消息审核规则:
+   - 游客和普通会员的消息需要审核
+   - 管理员及以上用户发送的消息直接通过
+   - 只有超管和对应组长可以审核消息
+
+## REST API 端点
+
+### 消息审核
+- 方法: `POST`
+- 路径: `/api/chat/audit`
+- 请求体:
+{
+    "messageId": "消息ID",
+    "userId": "该消息用户ID",
+    "userName":"该消息用户名称"，
+    "userType": "审核者类型",
+    "groupCode": "组号groupNo",
+    "status": "新状态(2为通过,3为撤销)",
+    "content": "原消息内容",
+    "iconUrl":"等级标签",
+    "timestamp": "送时间戳"
+}
+- 响应:
+{
+    "success": true/false,
+    "message": "错误信息(可选)"
+}
+
+## 使用限制
+- 消息审核权限:
+  - 超管可以审核所有消息
+  - 组长只能审核本组消息
+  - 其他用户无审核权限
+- 消息可见性:
+  - 游客和普通会员消息需要审核后才可见
+  - 管理员及以上用户消息直接可见
+  - 被撤销的消息对其他用户不可见
+
+## 错误处理
+- WebSocket连接错误
+- 消息审核失败
+- 权限验证失败
+
+
+## 开发环境
+- 测试服务器端口: 8085
+- WebSocket连接地址: `ws://localhost:{port}/api/ws/chat`
+- API地址: `http://localhost:{port}/api`
+
+
+# 获取历史消息接口
+
+## 接口信息
+- 请求路径: `/chat/history`
+- 请求方法: POST
+- 请求类型: application/json
+
+## 请求参数
+  son
+  {
+      "userId": "string", // 用户ID
+      "userType": "number", // 用户类型: 1-游客 2-会员 3-超管 4-组长 5-组员
+      "groupCode": "string" // 群组编号
+  }
+
+## 返回数据
+json
+{
+"success": true,
+"message": "获取历史消息成功",
+"data": [
+   {
+    "messageId": "string", // 消息ID
+    "userId": "string", // 发送者ID
+    "userName": "string", // 发送者名称
+    "userType": "number", // 发送者类型
+    "groupCode": "string", // 群组编号
+    "content": "string", // 消息内容
+    "status": "number", // 消息状态: 1-待审核 2-已通过 3-已撤销
+    "timestamp": "number" // 发送时间戳
+    }
+]
+}
+
+## 消息可见性规则
+1. 游客/会员:
+   - 可见所有已通过的消息(status=2)
+   - 可见自己的待审核消息(status=1 && userId匹配)
+
+2. 组长:
+   - 可见所有已通过的消息(status=2)
+   - 可见本组的待审核消息(status=1 && groupCode匹配)
+
+3. 超管:
+   - 可见所有消息
+
+## 错误码
+- 400: 参数不完整
+- 500: 服务器内部错误
+
+## 示例
+### 请求
+json
+{
+"userId": "1001",
+"userType": 2,
+"groupCode": "GROUP_A"
+}
+### 成功响应
+json
+{
+    "success": true,
+    "message": "获取历史消息成功",
+    "data": [
+        {
+        "messageId": "msg_001",
+        "userId": "1001",
+        "userName": "张三",
+        "userType": 2,
+        "groupCode": "GROUP_A",
+        "content": "Hello World",
+        "status": 2,
+        "timestamp": 1678123456789
+        }
+      ]
+}
+
+### 失败响应
+json
+{
+"success": false,
+"message": "获取历史消息失败: 参数不完整",
+"data": null
+}

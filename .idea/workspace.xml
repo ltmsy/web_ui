@@ -4,14 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fd7af8d7-479c-420a-8db4-80b5dceea7b5" name="Changes" comment="ininit">
-      <change beforePath="$PROJECT_DIR$/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/api/client.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/client.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Header.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Header.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/SideMenu.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SideMenu.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/router/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/stores/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/stores/config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/vite.config.js" afterDir="false" />
+    <list default="true" id="fd7af8d7-479c-420a-8db4-80b5dceea7b5" name="Changes" comment="客户端api清晰">
+      <change afterPath="$PROJECT_DIR$/聊天api.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ChatRoom.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ChatRoom.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,7 +72,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1738265465195</updated>
-      <workItem from="1738265466344" duration="6289000" />
+      <workItem from="1738265466344" duration="7488000" />
     </task>
     <task id="LOCAL-00001" summary="ininit">
       <option name="closed" value="true" />
@@ -86,7 +82,15 @@
       <option name="project" value="LOCAL" />
       <updated>1738270515271</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="客户端api清晰">
+      <option name="closed" value="true" />
+      <created>1738304285778</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1738304285778</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -105,6 +109,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="ininit" />
-    <option name="LAST_COMMIT_MESSAGE" value="ininit" />
+    <MESSAGE value="客户端api清晰" />
+    <option name="LAST_COMMIT_MESSAGE" value="客户端api清晰" />
   </component>
 </project>
