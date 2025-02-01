@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import PCLiveRoom from '../views/PC/LiveRoom.vue'
 import Login from '../views/Login.vue'
+import MobileLogin from '../views/Mobile/Login.vue'
 
 const routes = [
   {
@@ -11,6 +12,11 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login
+  },
+  {
+    path: '/mobile/login',
+    name: 'MobileLogin',
+    component: MobileLogin
   },
   {
     path: '/pc/live',

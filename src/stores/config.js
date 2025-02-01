@@ -117,12 +117,12 @@ export const useConfigStore = defineStore('config', {
         console.error('登出失败:', error)
       } finally {
         this.clearUserData()
-        await this.fetchHomeInfo()
-        
+        // 根据当前路由判断跳转
+        const isMobile = window.location.pathname.includes('/mobile')
         if (this.needLogin) {
-          window.location.href = `${window.location.origin}/login`
+          window.location.href = `${window.location.origin}${isMobile ? '/mobile/login' : '/login'}`
         } else {
-          window.location.href = window.location.origin
+          window.location.href = `${window.location.origin}${isMobile ? '/mobile/live' : '/'}`
         }
       }
     },
