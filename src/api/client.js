@@ -17,8 +17,8 @@ export const getHomeInfo = (groupNo) => {
   return api.get(`/${groupNo}`)
 }
 
-export const login = (username, password) => {
-  return api.post('/login', { username, password })
+export function login(data) {
+  return api.post('/login', data)
 }
 
 export const logout = () => {

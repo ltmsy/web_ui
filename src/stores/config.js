@@ -51,7 +51,7 @@ export const useConfigStore = defineStore('config', {
       
       const params = {
         userId: this.userInfo.id,
-        source: isMobile() ? 'h5' : 'web',
+        source: isMobile() ? 'h5' : 'web',  // 根据设备类型设置来源
         browser: navigator.userAgent,
         deviceInfo: `${navigator.platform}|${window.screen.width}x${window.screen.height}`
       };
@@ -88,7 +88,7 @@ export const useConfigStore = defineStore('config', {
 
     async login(username, password) {
       try {
-        const { data } = await loginApi(username, password)
+        const { data } = await loginApi({ username, password })
         if (data.code === 200) {
           this.token = data.data.token
           this.configs = data.data.configs.reduce((acc, curr) => {
@@ -102,10 +102,13 @@ export const useConfigStore = defineStore('config', {
           console.log('登录成功，store已更新')
           this.initOnlineWebSocket()
         } else {
-          throw new Error(data.message || '登录失败')
+          throw new Error(data.message || '用户名或密码错误')
         }
       } catch (error) {
         console.error('登录失败:', error)
+        if (error.response?.data?.message) {
+          throw new Error(error.response.data.message)
+        }
         throw error
       }
     },
@@ -132,15 +135,21 @@ export const useConfigStore = defineStore('config', {
     },
 
     clearUserData() {
-      if (this.onlineWs) {
-        this.onlineWs.close();
-        this.onlineWs = null;
+      if (this.onlineWs && typeof this.onlineWs.close === 'function') {
+        try {
+          this.onlineWs.close();
+          console.log('WebSocket连接已关闭');
+        } catch (error) {
+          console.warn('关闭WebSocket连接失败:', error);
+        }
       }
-      this.token = null
-      this.userInfo = null
-      this.fakeIdentities = []
-      this.currentFakeIdentity = null
-      localStorage.removeItem('token')
+      this.onlineWs = null;
+
+      this.token = null;
+      this.userInfo = null;
+      this.fakeIdentities = [];
+      this.currentFakeIdentity = null;
+      localStorage.removeItem('token');
     }
   }
 }) 

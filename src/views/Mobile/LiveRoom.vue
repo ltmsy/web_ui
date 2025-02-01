@@ -7,8 +7,11 @@
 
     <!-- 功能按钮区 -->
     <div class="action-bar">
-  
-      <div class="action-btn" @click="handleSignIn(this)">
+      <div 
+        class="action-btn" 
+        @click="handleSignIn"
+        @click.stop="console.log('Button clicked')"
+      >
         <span>签到</span>
       </div>
       <div class="action-btn" @click="showSchedule = true">
@@ -17,16 +20,16 @@
       <div class="action-btn" @click="showTeacherInfo = true">
         <span>老师简介</span>
       </div>
-      <div 
+      <div
         v-if="token"
-        class="action-btn logout-btn" 
+        class="action-btn logout-btn"
         @click="handleLogout"
       >
         <span>退出</span>
       </div>
-      <div 
+      <div
         v-if="!token"
-        class="action-btn login-btn" 
+        class="action-btn login-btn"
         @click="$router.push('/mobile/login')"
       >
         <span>登录</span>
@@ -55,15 +58,19 @@ import { useConfigStore } from '@/stores/config';
 import LivePlayer from '@/components/LivePlayer.vue';
 import ChatRoom from '@/components/ChatRoom.vue';
 import { checkin } from '@/api/chat';
+import { showMobileMessage } from '@/utils/mobileMessage';  // 导入消息提示函数
 
 const store = useConfigStore();
-const { 
+const {
   h5PullUrl: pullUrl,
   courseImageUrl,
   teacherIntroUrl,
   userInfo,
   token
 } = storeToRefs(store);
+
+// 检查 token 是否正确获取
+console.log('token:', token.value);
 
 const showSchedule = ref(false);
 const showTeacherInfo = ref(false);
@@ -74,26 +81,24 @@ const modalImage = computed(() => {
   return '';
 });
 
-const { proxy: currentInstance } = getCurrentInstance();
-
 // 签到处理
-const handleSignIn = async (currentInstance) => {
+const handleSignIn = async () => {
   if (!token.value) {
-    currentInstance.$message('请先登录！', 'warning');
+    showMobileMessage('请登录后再签到', 'warning');
     return;
   }
 
   try {
     const { data } = await checkin();
-    currentInstance.$message(data.message, 'success');
+    showMobileMessage(data.message, 'success');
   } catch (error) {
     console.error('签到失败:', error);
     if (error.response?.status === 401) {
-      currentInstance.$message('请先登录', 'error');
+      showMobileMessage('登录已过期，请重新登录', 'error');
     } else if (error.response?.status === 400) {
-      currentInstance.$message(error.response.data.message, 'error');
+      showMobileMessage(error.response.data.message, 'error');
     } else {
-      currentInstance.$message('签到失败，请稍后重试', 'error');
+      showMobileMessage('网络异常，请稍后重试', 'error');
     }
   }
 };
@@ -104,7 +109,7 @@ const handleLogout = async () => {
     await store.logout();
   } catch (error) {
     console.error('退出失败:', error);
-    alert('退出失败，请稍后重试');
+    showMobileMessage('退出失败，请稍后再试', 'error');
   }
 };
 

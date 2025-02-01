@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fd7af8d7-479c-420a-8db4-80b5dceea7b5" name="Changes" comment="第一版ui完美">
-      <change beforePath="$PROJECT_DIR$/src/components/ChatRoom.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ChatRoom.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api/client.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/client.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stores/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/stores/config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/Mobile/LiveRoom.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Mobile/LiveRoom.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
