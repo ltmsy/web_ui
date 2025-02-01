@@ -1,0 +1,58 @@
+:root {
+  /* 主色调 */
+  /*  --primary-metal: #8B8B8B;  /* 金属色 */
+  /*  --metal-dark: #4A4A4A;    /* 深金属色 */
+  /*  --metal-light: #C0C0C0;   /* 亮金属色 */
+  /*  --metal-shadow: #2C2C2C;  /* 金属阴影色 */
+  
+  /* 背景色 */
+  --bg-dark: #1A1A1A;      /* 主背景色 */
+  --bg-darker: #141414;    /* 深色背景 */
+  --bg-lighter: #2A2A2A;   /* 浅色背景 */
+  --bg-hover: #333333;     /* 悬浮背景 */
+  
+  /* 文字颜色 */
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.45);
+  
+  /* 边框颜色 */
+  --border-dark: #333333;
+  --border-light: #404040;
+  
+  /* 按钮颜色 */
+  /*  --btn-primary: linear-gradient(145deg, #8B8B8B, #4A4A4A);
+  --btn-hover: linear-gradient(145deg, #9B9B9B, #5A5A5A);
+  --btn-active: linear-gradient(145deg, #4A4A4A, #2C2C2C); */
+  
+  /* 毛玻璃效果 */
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  /*  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); */
+
+  /* 功能按钮颜色 */
+  --action-gold: #FFB300;    /* 金色：签到、课程表、老师简介、登录 */
+  --action-blue: #2196F3;    /* 蓝色：发送 */
+  --action-red: #F44336;     /* 红色：退出、撤销 */
+  --action-green: #4CAF50;   /* 绿色：通过 */
+  
+  /* 文字颜色 */
+  --text-gold: #FFB300;      /* 金色文字：在线人数、公告、欢迎用户 */
+
+  /* 阴影效果 */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
+
+  /* 消息提示样式 */
+  --message-bg: rgba(0, 0, 0, 0.85);
+  --message-border: var(--border-dark);
+  --message-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.48);
+  --message-success: var(--action-green);
+  --message-error: var(--action-red);
+  --message-info: var(--action-blue);
+  --message-warning: var(--action-gold);
+
+  /* 输入框样式 */
+  --input-focus-shadow: 0 0 0 2px rgba(255, 179, 0, 0.1);
+} 
