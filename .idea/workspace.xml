@@ -4,16 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fd7af8d7-479c-420a-8db4-80b5dceea7b5" name="Changes" comment="第一版ui完美">
+    <list default="true" id="fd7af8d7-479c-420a-8db4-80b5dceea7b5" name="Changes" comment="暂时稳定，pc提示还未优化">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/api/client.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/client.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/stores/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/stores/config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/Mobile/LiveRoom.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Mobile/LiveRoom.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ChatRoom.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ChatRoom.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/LivePlayer.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/LivePlayer.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="directory" />
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -43,20 +47,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev-1.0-ui&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/finance_live/web_ui&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "dev-1.0-ui",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/allen/Desktop/工作zhibo/直播代码/zhibo2_BJPYs",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\finance_live\web_ui" />
@@ -152,7 +156,23 @@
       <option name="project" value="LOCAL" />
       <updated>1738409202440</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="暂时稳定，pc提示还未优化">
+      <option name="closed" value="true" />
+      <created>1738416163566</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1738416163566</updated>
+    </task>
+    <task id="LOCAL-00011" summary="暂时稳定，pc提示还未优化">
+      <option name="closed" value="true" />
+      <created>1738416224953</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1738416224953</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -179,6 +199,8 @@
     <MESSAGE value="在线连接可以了" />
     <MESSAGE value="H5 正常" />
     <MESSAGE value="第一版ui完美" />
-    <option name="LAST_COMMIT_MESSAGE" value="第一版ui完美" />
+    <MESSAGE value="暂时稳定" />
+    <MESSAGE value="暂时稳定，pc提示还未优化" />
+    <option name="LAST_COMMIT_MESSAGE" value="暂时稳定，pc提示还未优化" />
   </component>
 </project>

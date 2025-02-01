@@ -1,7 +1,7 @@
 <template>
   <div class="live-player">
     <div class="player-container" v-if="isPlaying">
-      <video ref="videoPlayer" controls>
+      <video ref="videoPlayer" controls class="video-player">
         <source :src="webPullUrl" type="application/x-mpegURL">
       </video>
     </div>
@@ -43,15 +43,19 @@ const startPlay = () => {
 .live-player {
   position: relative;
   width: 100%;
-  aspect-ratio: 16/9;
+  height: 100%;
   background: #000;
   border-radius: 4px;
   overflow: hidden;
 }
 
 .player-container video {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  object-fit: cover;
 }
 
 .player-placeholder {
@@ -90,5 +94,12 @@ const startPlay = () => {
 
 .play-button svg {
   margin-left: 5px; /* 稍微调整播放图标的位置 */
+}
+
+/* 移动端样式优化 */
+@media (max-width: 768px) {
+  .video-player {
+    object-fit: contain;  /* 移动端可能更适合 contain */
+  }
 }
 </style> 

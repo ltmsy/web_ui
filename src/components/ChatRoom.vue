@@ -21,8 +21,8 @@
           <span class="username">{{ message.userName || message.username }}</span>
           <span v-if="message.timestamp" class="time">{{ formatTime(message.timestamp) }}</span>
         </div>
-        <div class="content">
-          {{ message.content }}
+        <div class="message-content">
+          <div class="content" v-html="formatContent(message.content)"></div>
           <!-- 审核按钮 -->
           <div v-if="canAudit(message)" class="audit-actions">
             <!-- 只有在待审核状态时显示通过按钮 -->
@@ -82,8 +82,27 @@
         </div>
       </div>
 
+      <!-- 自定义表情面板 -->
       <div class="emoji-panel" v-if="showEmoji">
-        <span v-for="emoji in emojis" :key="emoji" @click="insertEmoji(emoji)">{{ emoji }}</span>
+        <div class="emoji-content">
+          <!-- 普通表情和GIF混合显示 -->
+          <span 
+            v-for="emoji in emojis" 
+            :key="emoji" 
+            @click="insertEmoji(emoji)"
+            class="emoji-item"
+          >
+            {{ emoji }}
+          </span>
+          <div 
+            v-for="(gif, index) in gifs" 
+            :key="gif.url" 
+            class="gif-item"
+            @click="insertGif(gif)"
+          >
+            <img :src="gif.url" :alt="gif.name">
+          </div>
+        </div>
       </div>
       
       <div class="input-container">
@@ -106,10 +125,12 @@ import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/stores/config';
 import { useChatStore } from '@/stores/chat';
 import { USER_TYPES, MESSAGE_STATUS } from '@/constants/chat';
+import { showMessage } from '@/utils/message';  // PC端
+import { showMobileMessage } from '@/utils/mobileMessage';  // 移动端
 
 const configStore = useConfigStore();
 const chatStore = useChatStore();
-const { userInfo } = storeToRefs(configStore);
+const { userInfo, allowVisitorChat } = storeToRefs(configStore);
 
 const messagesContainer = ref(null);
 const messageInput = ref('');
@@ -120,7 +141,18 @@ const selectedIdentity = ref(configStore.currentFakeIdentity);
 const autoScroll = ref(true);
 const showOptions = ref(false);
 
-const emojis = ['😊', '😂', '🤔', '👍', '❤️', '😎', '🎉', '👏'];
+// 表情配置
+const emojis = ['😊', '😂', '🤔', '👍', '❤️', '😎', '🎉', '👏', '😄', '🥰', '😍', '🤩', '😋', '🤗', '🤭', '🥳'];
+const gifs = [
+  { name: '1', url: '/emojis/1.gif' },
+  { name: '2', url: '/emojis/2.gif' },
+  { name: '3', url: '/emojis/3.gif' },
+  { name: '4', url: '/emojis/4.gif' },
+  { name: '5', url: '/emojis/5.gif' },
+  { name: '7', url: '/emojis/7.gif' }
+];
+
+const currentEmojiTab = ref(0);
 
 // 可见消息列表
 const visibleMessages = computed(() => 
@@ -134,7 +166,7 @@ const visibleMessages = computed(() =>
 // 是否可以发送消息
 const canSendMessage = computed(() => {
   if (!userInfo.value) return false;
-  if (configStore.allowVisitorChat) return true;
+  if (allowVisitorChat.value) return true;
   return userInfo.value.userType !== USER_TYPES.VISITOR;
 });
 
@@ -226,8 +258,17 @@ const scrollToBottom = () => {
   }
 };
 
+// 插入普通表情
 const insertEmoji = (emoji) => {
   messageInput.value += emoji;
+  showEmoji.value = false;
+};
+
+// 插入GIF动图
+const insertGif = (gif) => {
+  // 从 url 中提取数字 ID
+  const gifId = gif.url.match(/\/(\d+)\.gif$/)[1];
+  messageInput.value += `[gif:${gifId}]`;
   showEmoji.value = false;
 };
 
@@ -293,6 +334,19 @@ const stopOnlineCountTimer = () => {
   }
 };
 
+// 点击外部关闭表情选择框
+const handleClickOutside = (event) => {
+  const emojiPanel = document.querySelector('.emoji-panel');
+  const emojiBtn = document.querySelector('.emoji-btn');
+  
+  if (showEmoji.value && 
+      emojiPanel && 
+      !emojiPanel.contains(event.target) && 
+      !emojiBtn.contains(event.target)) {
+    showEmoji.value = false;
+  }
+};
+
 // 初始化
 onMounted(async () => {
   console.log('聊天室组件挂载, 用户信息:', userInfo.value);
@@ -339,6 +393,9 @@ onMounted(async () => {
         showOptions.value = false;
       }
     });
+
+    // 添加点击事件监听
+    document.addEventListener('click', handleClickOutside);
   } catch (error) {
     console.error('初始化聊天室失败:', error);
     console.error('错误详情:', error.response || error);
@@ -381,6 +438,9 @@ onUnmounted(() => {
 
   // 停止在线人数更新
   stopOnlineCountTimer();
+
+  // 移除点击事件监听
+  document.removeEventListener('click', handleClickOutside);
 });
 
 // 监听消息可见性变化
@@ -405,6 +465,52 @@ const toggleSelect = () => {
 const selectIdentity = (identity) => {
   selectedIdentity.value = identity;
   showOptions.value = false;
+};
+
+// 判断是否为移动端
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const showToast = isMobile ? showMobileMessage : showMessage;
+
+// 计算是否可以发言
+const canChat = computed(() => {
+  return configStore.token || allowVisitorChat.value;
+});
+
+// 输入框提示文字
+const inputPlaceholder = computed(() => {
+  if (!configStore.token && !allowVisitorChat.value) {
+    return '请登录后发言';
+  }
+  return '请输入消息';
+});
+
+const handleSend = () => {
+  if (!messageInput.value.trim()) return;
+  
+  if (!canChat.value) {
+    showToast('请登录后发言', 'warning');
+    return;
+  }
+
+  try {
+    // ... 发送消息的逻辑保持不变 ...
+    
+    messageInput.value = '';  // 清空输入框
+  } catch (error) {
+    console.error('发送消息失败:', error);
+    showToast('发送失败，请重试', 'error');
+  }
+};
+
+// 格式化消息内容，将 [gif:x] 转换为图片标签
+const formatContent = (content) => {
+  if (!content) return '';
+  
+  // 替换 [gif:x] 格式的文本为对应的图片
+  return content.replace(/\[gif:(\d+)\]/g, (match, gifId) => {
+    const gifUrl = `/emojis/${gifId}.gif`;
+    return `<img class="chat-gif" src="${gifUrl}" alt="gif${gifId}">`;
+  });
 };
 </script>
 
@@ -459,15 +565,6 @@ const selectIdentity = (identity) => {
   background: var(--bg-hover);
 }
 
-.content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  color: var(--text-gold);
-  font-size: 13px;  /* 稍微小一点的字体大小 */
-}
-
 .message-info {
   display: flex;
   align-items: center;
@@ -504,22 +601,57 @@ const selectIdentity = (identity) => {
   padding: 6px;
   border-top: 1px solid var(--border-dark);
   background: var(--bg-lighter);
+  position: relative;
 }
 
 .emoji-panel {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  width: 300px;
+  background: var(--bg-lighter);
+  border: 1px solid var(--border-dark);
+  border-radius: 4px;
+  margin-bottom: 5px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;  /* 确保表情面板在最上层 */
+}
+
+.emoji-content {
+  padding: 10px;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   gap: 5px;
-  padding: 10px;
-  background: var(--bg-lighter);
-  border: 1px solid var(--border-dark);
-  margin-bottom: 10px;
-  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
-.emoji-panel span {
+.emoji-item {
   cursor: pointer;
   text-align: center;
+  font-size: 20px;
+  transition: transform 0.2s;
+}
+
+.emoji-item:hover {
+  transform: scale(1.2);
+}
+
+.gif-item {
+  cursor: pointer;
+  border-radius: 4px;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.gif-item:hover {
+  transform: scale(1.05);
+}
+
+.gif-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .input-container {
@@ -563,10 +695,24 @@ button:disabled {
   color: initial;
 }
 
+.message-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.content {
+  color: var(--text-gold);
+  font-size: 13px;
+  word-break: break-word;
+  flex: 1;
+}
+
 .audit-actions {
   display: flex;
   gap: 8px;
-  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .audit-btn {
@@ -712,5 +858,29 @@ button:disabled {
     width: 14px;
     height: 14px;
   }
+}
+
+.chat-input input:disabled {
+  background: var(--bg-darker);
+  cursor: not-allowed;
+  color: var(--text-muted);
+}
+
+.send-btn:disabled {
+  background: var(--bg-darker);
+  cursor: not-allowed;
+  color: var(--text-muted);
+}
+
+/* 消息中的 GIF 样式 */
+:deep(.chat-gif) {
+  width: 200px;  /* 增加宽度 */
+  height: auto;
+  vertical-align: middle;
+  border-radius: 4px;
+  margin: 4px 0;  /* 上下增加间距 */
+  display: block;  /* 让图片独占一行 */
+  max-height: 200px;  /* 限制最大高度 */
+  object-fit: contain;  /* 保持宽高比 */
 }
 </style> 
