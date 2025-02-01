@@ -48,16 +48,38 @@
     <div class="chat-input">
       <!-- 虚假身份选择器 -->
       <div v-if="configStore.canUseFakeIdentity" class="fake-identity-selector">
-        <select v-model="selectedIdentity">
-          <option :value="null">使用真实身份</option>
-          <option 
-            v-for="identity in configStore.fakeIdentities" 
-            :key="identity.id"
-            :value="identity"
-          >
-            {{ identity.identityName }}
-          </option>
-        </select>
+        <div class="custom-select" @click="toggleSelect">
+          <div class="select-value">
+            <div 
+              v-if="selectedIdentity?.levelIcon" 
+              class="level-icon" 
+              :style="{ backgroundImage: `url(${selectedIdentity.levelIcon})` }"
+            ></div>
+            {{ selectedIdentity?.identityName || '使用真实身份' }}
+          </div>
+          <div class="select-options" v-if="showOptions">
+            <div 
+              class="option" 
+              :class="{ selected: !selectedIdentity }"
+              @click="selectIdentity(null)"
+            >
+              使用真实身份
+            </div>
+            <div
+              v-for="identity in configStore.fakeIdentities"
+              :key="identity.id"
+              class="option"
+              :class="{ selected: selectedIdentity?.id === identity.id }"
+              @click="selectIdentity(identity)"
+            >
+              <div 
+                class="level-icon" 
+                :style="{ backgroundImage: `url(${identity.levelIcon})` }"
+              ></div>
+              {{ identity.identityName }}
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="emoji-panel" v-if="showEmoji">
@@ -96,6 +118,7 @@ const onlineCount = ref(0);
 const onlineCountTimer = ref(null);
 const selectedIdentity = ref(configStore.currentFakeIdentity);
 const autoScroll = ref(true);
+const showOptions = ref(false);
 
 const emojis = ['😊', '😂', '🤔', '👍', '❤️', '😎', '🎉', '👏'];
 
@@ -308,6 +331,14 @@ onMounted(async () => {
 
     // 启动在线人数更新
     startOnlineCountTimer();
+
+    // 点击外部关闭下拉框
+    document.addEventListener('click', (e) => {
+      const select = document.querySelector('.custom-select');
+      if (select && !select.contains(e.target)) {
+        showOptions.value = false;
+      }
+    });
   } catch (error) {
     console.error('初始化聊天室失败:', error);
     console.error('错误详情:', error.response || error);
@@ -366,6 +397,15 @@ watchEffect(() => {
 watch(() => configStore.fakeOnlineCount, () => {
   generateOnlineCount();
 });
+
+const toggleSelect = () => {
+  showOptions.value = !showOptions.value;
+};
+
+const selectIdentity = (identity) => {
+  selectedIdentity.value = identity;
+  showOptions.value = false;
+};
 </script>
 
 <style scoped>
@@ -425,6 +465,7 @@ watch(() => configStore.fakeOnlineCount, () => {
   align-items: center;
   gap: 10px;
   color: var(--text-gold);
+  font-size: 13px;  /* 稍微小一点的字体大小 */
 }
 
 .message-info {
@@ -436,10 +477,10 @@ watch(() => configStore.fakeOnlineCount, () => {
 
 .username {
   font-weight: bold;
-  color: var(--text-primary);
+  color: rgba(255, 255, 255, 0.85);  /* 稍微暗一点的白色 */
   text-shadow: none;
   line-height: 1;
-  font-size: 14px;  /* 明确设置用户名字体大小 */
+  font-size: 14px;
 }
 
 .time {
@@ -571,15 +612,65 @@ button:disabled {
 
 .fake-identity-selector {
   margin-bottom: 10px;
+  position: relative;
 }
 
-.fake-identity-selector select {
+.custom-select {
+  position: relative;
   width: 200px;
-  padding: 5px;
+}
+
+.select-value {
+  padding: 6px 12px;
+  background: var(--bg-darker);
   border: 1px solid var(--border-dark);
   border-radius: 4px;
-  background: var(--bg-darker);
   color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.select-options {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  margin-bottom: 4px;
+  background: white;
+  border: 1px solid var(--border-dark);
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.option {
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--bg-darker);
+}
+
+.option:hover {
+  background: #f5f5f5;
+}
+
+.option.selected {
+  background: #e8e8e8;
+}
+
+.level-icon {
+  width: 35px;
+  height: 14px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  flex-shrink: 0;
 }
 
 .scroll-control {

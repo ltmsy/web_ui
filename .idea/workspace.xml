@@ -4,16 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fd7af8d7-479c-420a-8db4-80b5dceea7b5" name="Changes" comment="H5 正常">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+    <list default="true" id="fd7af8d7-479c-420a-8db4-80b5dceea7b5" name="Changes" comment="第一版ui完美">
       <change beforePath="$PROJECT_DIR$/src/components/ChatRoom.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ChatRoom.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Header.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Header.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/SideMenu.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SideMenu.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Login.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/Mobile/LiveRoom.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Mobile/LiveRoom.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/PC/LiveRoom.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/PC/LiveRoom.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -149,7 +141,15 @@
       <option name="project" value="LOCAL" />
       <updated>1738404747288</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="第一版ui完美">
+      <option name="closed" value="true" />
+      <created>1738409202440</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1738409202440</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -175,6 +175,7 @@
     <MESSAGE value="签到正常了" />
     <MESSAGE value="在线连接可以了" />
     <MESSAGE value="H5 正常" />
-    <option name="LAST_COMMIT_MESSAGE" value="H5 正常" />
+    <MESSAGE value="第一版ui完美" />
+    <option name="LAST_COMMIT_MESSAGE" value="第一版ui完美" />
   </component>
 </project>
