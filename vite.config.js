@@ -19,6 +19,11 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true
       },
+      '/api/websocket': {
+        target: 'ws://localhost:8080',
+        ws: true,
+        changeOrigin: true
+      },
       // 聊天相关的API直接代理到8085
       '/api/chat': {
         target: 'http://localhost:8085',

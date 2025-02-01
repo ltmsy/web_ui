@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { getHomeInfo, login as loginApi, logout } from '@/api/client'
 import { useRouter } from 'vue-router'
+import { OnlineWebSocketManager } from '@/utils/onlineWebsocket'
 
 export const useConfigStore = defineStore('config', {
   state: () => ({
@@ -10,7 +11,8 @@ export const useConfigStore = defineStore('config', {
     error: null,
     token: localStorage.getItem('token'),
     fakeIdentities: [],
-    currentFakeIdentity: null
+    currentFakeIdentity: null,
+    onlineWs: null
   }),
 
   persist: {
@@ -36,6 +38,29 @@ export const useConfigStore = defineStore('config', {
   },
 
   actions: {
+    initOnlineWebSocket() {
+      if (!this.userInfo?.id) {
+        console.log('用户ID不存在，不建立在线状态连接');
+        return;
+      }
+      
+      // 判断是否为移动设备
+      const isMobile = () => {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      };
+      
+      const params = {
+        userId: this.userInfo.id,
+        source: isMobile() ? 'h5' : 'web',
+        browser: navigator.userAgent,
+        deviceInfo: `${navigator.platform}|${window.screen.width}x${window.screen.height}`
+      };
+
+      console.log('初始化在线状态连接, 参数:', params);
+      this.onlineWs = new OnlineWebSocketManager(params);
+      this.onlineWs.connect();
+    },
+
     async fetchHomeInfo(groupNo = '1001') {
       this.loading = true
       try {
@@ -49,6 +74,7 @@ export const useConfigStore = defineStore('config', {
           this.userInfo = data.data.userInfo
           
           console.log('配置信息已更新')
+          this.initOnlineWebSocket()
         }
       } catch (error) {
         this.error = error.message
@@ -74,6 +100,7 @@ export const useConfigStore = defineStore('config', {
           
           localStorage.setItem('token', this.token)
           console.log('登录成功，store已更新')
+          this.initOnlineWebSocket()
         } else {
           throw new Error(data.message || '登录失败')
         }
@@ -105,6 +132,10 @@ export const useConfigStore = defineStore('config', {
     },
 
     clearUserData() {
+      if (this.onlineWs) {
+        this.onlineWs.close();
+        this.onlineWs = null;
+      }
       this.token = null
       this.userInfo = null
       this.fakeIdentities = []
