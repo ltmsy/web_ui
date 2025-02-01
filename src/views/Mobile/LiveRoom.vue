@@ -8,7 +8,7 @@
     <!-- 功能按钮区 -->
     <div class="action-bar">
   
-      <div class="action-btn" @click="handleSignIn">
+      <div class="action-btn" @click="handleSignIn(this)">
         <span>签到</span>
       </div>
       <div class="action-btn" @click="showSchedule = true">
@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, getCurrentInstance } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/stores/config';
 import LivePlayer from '@/components/LivePlayer.vue';
@@ -74,24 +74,26 @@ const modalImage = computed(() => {
   return '';
 });
 
+const { proxy: currentInstance } = getCurrentInstance();
+
 // 签到处理
-const handleSignIn = async () => {
+const handleSignIn = async (currentInstance) => {
   if (!token.value) {
-    alert('请先登录！');
+    currentInstance.$message('请先登录！', 'warning');
     return;
   }
 
   try {
     const { data } = await checkin();
-    alert(data.message);
+    currentInstance.$message(data.message, 'success');
   } catch (error) {
     console.error('签到失败:', error);
     if (error.response?.status === 401) {
-      alert('请先登录');
+      currentInstance.$message('请先登录', 'error');
     } else if (error.response?.status === 400) {
-      alert(error.response.data.message);
+      currentInstance.$message(error.response.data.message, 'error');
     } else {
-      alert('签到失败，请稍后重试');
+      currentInstance.$message('签到失败，请稍后重试', 'error');
     }
   }
 };
@@ -117,15 +119,17 @@ const closeModal = () => {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f5f5f5;
+  background: var(--bg-dark);
+  color: var(--text-primary);
 }
 
 .player-section {
   width: 100%;
-  /* 16:9 比例 */
   padding-top: 56.25%;
   position: relative;
-  background: #000;
+  background: var(--bg-darker);
+  border-bottom: 1px solid var(--border-dark);
+  margin-bottom: 1px;
 }
 
 .player-section :deep(.live-player) {
@@ -138,34 +142,47 @@ const closeModal = () => {
 
 .action-bar {
   display: flex;
-  padding: 10px;
-  gap: 10px;
-  background: #fff;
+  padding: 4px;
+  gap: 8px;
+  background: var(--bg-darker);
   overflow-x: auto;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
+  border-bottom: 1px solid var(--border-dark);
+  margin-bottom: 1px;
+  position: relative;
 }
 
 .action-btn {
   flex: 0 0 auto;
   min-width: 70px;
-  padding: 8px 0;
+  padding: 6px 12px;
   text-align: center;
-  background: #f0f0f0;
-  border-radius: 4px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
   font-size: 14px;
-  margin-right: 8px;
   display: inline-block;
 }
 
-.action-btn:last-child {
-  margin-right: 0;
+.action-btn:active {
+  transform: scale(0.95);
+  background: var(--glass-bg);
+}
+
+.login-btn,
+.logout-btn {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  border: none;
 }
 
 .login-btn {
-  background: #1890ff;
+  background: var(--action-gold);
   color: white;
-  margin-left: auto;
 }
 
 .login-btn:active {
@@ -173,9 +190,8 @@ const closeModal = () => {
 }
 
 .logout-btn {
-  background: #ff4d4f;
+  background: var(--action-red);
   color: white;
-  margin-left: auto;
 }
 
 .logout-btn:active {
@@ -185,7 +201,7 @@ const closeModal = () => {
 .chat-section {
   flex: 1;
   overflow: hidden;
-  padding: 10px;
+  padding: 2px;
 }
 
 .modal {
@@ -194,7 +210,7 @@ const closeModal = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -205,6 +221,10 @@ const closeModal = () => {
   position: relative;
   width: 90%;
   max-height: 90vh;
+  background: var(--bg-lighter);
+  border-radius: 12px;
+  border: 1px solid var(--border-dark);
+  padding: 20px;
 }
 
 .modal-content img {
@@ -219,11 +239,13 @@ const closeModal = () => {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: #fff;
-  border: none;
+  background: var(--bg-lighter);
+  border: 1px solid var(--border-dark);
+  color: var(--text-primary);
   font-size: 20px;
   line-height: 30px;
   text-align: center;
+  cursor: pointer;
 }
 
 .action-bar::-webkit-scrollbar {

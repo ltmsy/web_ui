@@ -50,22 +50,23 @@ const handleLogin = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
+  background: var(--bg-dark);
 }
 
 .login-box {
-  background: white;
+  background: var(--bg-lighter);
   padding: 30px;
   border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   width: 100%;
   max-width: 400px;
+  border: 1px solid var(--border-dark);
 }
 
 h2 {
   text-align: center;
   margin-bottom: 24px;
-  color: #333;
+  color: var(--text-gold);
 }
 
 .input-group {
@@ -75,15 +76,22 @@ h2 {
 input {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-dark);
   border-radius: 4px;
   font-size: 14px;
+  background: var(--bg-darker);
+  color: var(--text-primary);
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--action-gold);
 }
 
 button {
   width: 100%;
   padding: 12px;
-  background: #1890ff;
+  background: var(--action-gold);
   color: white;
   border: none;
   border-radius: 4px;
@@ -92,7 +100,8 @@ button {
 }
 
 button:disabled {
-  background: #ccc;
+  background: var(--bg-lighter);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 </style> 

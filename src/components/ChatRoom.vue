@@ -13,8 +13,12 @@
     <div class="chat-messages" ref="messagesContainer">
       <div v-for="(message, index) in visibleMessages" :key="message.messageId || index" class="message">
         <div class="message-info">
-          <img v-if="message.iconUrl" :src="message.iconUrl" class="level-icon" alt="等级">
-          <span class="username">{{ message.userName || message.username }}：</span>
+          <div 
+            v-if="message.iconUrl" 
+            class="level-icon" 
+            :style="{ backgroundImage: `url(${message.iconUrl})` }"
+          ></div>
+          <span class="username">{{ message.userName || message.username }}</span>
           <span v-if="message.timestamp" class="time">{{ formatTime(message.timestamp) }}</span>
         </div>
         <div class="content">
@@ -369,22 +373,31 @@ watch(() => configStore.fakeOnlineCount, () => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-dark);
   border-radius: 4px;
+  background: var(--bg-darker);
 }
 
 .chat-header {
-  padding: 10px;
-  background: #f5f5f5;
+  padding: 6px 10px;
+  background: var(--bg-lighter);
+  border-bottom: 1px solid var(--border-dark);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: var(--text-gold);
+  height: 32px;
+}
+
+.chat-header span {
+  color: var(--text-gold);
+  text-shadow: none;
 }
 
 .chat-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 10px;
+  padding: 6px;
   scrollbar-width: none;  /* Firefox */
   -ms-overflow-style: none;  /* IE and Edge */
 }
@@ -395,17 +408,61 @@ watch(() => configStore.fakeOnlineCount, () => {
 }
 
 .message {
-  margin-bottom: 10px;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.message:hover {
+  background: var(--bg-hover);
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-gold);
+}
+
+.message-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;  /* 设置固定高度，作为对齐基准 */
 }
 
 .username {
   font-weight: bold;
-  color: #666;
+  color: var(--text-primary);
+  text-shadow: none;
+  line-height: 1;
+  font-size: 14px;  /* 明确设置用户名字体大小 */
+}
+
+.time {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.level-icon {
+  width: 50px;  /* 稍微减小宽度 */
+  height: 16px;  /* 比用户名略小 */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  align-self: center;  /* 确保垂直居中 */
 }
 
 .chat-input {
-  padding: 10px;
-  border-top: 1px solid #e0e0e0;
+  padding: 6px;
+  border-top: 1px solid var(--border-dark);
+  background: var(--bg-lighter);
 }
 
 .emoji-panel {
@@ -413,9 +470,10 @@ watch(() => configStore.fakeOnlineCount, () => {
   grid-template-columns: repeat(8, 1fr);
   gap: 5px;
   padding: 10px;
-  background: #fff;
-  border: 1px solid #e0e0e0;
+  background: var(--bg-lighter);
+  border: 1px solid var(--border-dark);
   margin-bottom: 10px;
+  border-radius: 4px;
 }
 
 .emoji-panel span {
@@ -431,17 +489,32 @@ watch(() => configStore.fakeOnlineCount, () => {
 .input-container input {
   flex: 1;
   padding: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-dark);
   border-radius: 4px;
+  background: var(--bg-darker);
+  color: var(--text-primary);
+}
+
+.input-container input:focus,
+.fake-identity-selector select:focus {
+  outline: none;
+  border-color: var(--action-gold);
+  box-shadow: var(--input-focus-shadow);
 }
 
 button {
   padding: 8px 15px;
-  background: #1890ff;
-  color: #fff;
+  background: var(--action-blue);
+  color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+button:disabled {
+  background: var(--bg-lighter);
+  color: var(--text-muted);
+  cursor: not-allowed;
 }
 
 .emoji-btn {
@@ -449,28 +522,10 @@ button {
   color: initial;
 }
 
-.level-icon {
-  width: 16px;
-  height: 16px;
-  vertical-align: middle;
-  margin-right: 4px;
-}
-
-.message-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.time {
-  font-size: 12px;
-  color: #999;
-}
-
 .audit-actions {
-  display: inline-flex;
+  display: flex;
   gap: 8px;
-  margin-left: 8px;
+  margin-left: auto;
 }
 
 .audit-btn {
@@ -479,16 +534,39 @@ button {
   border-radius: 2px;
   cursor: pointer;
   font-size: 12px;
+  min-width: 40px;
+  text-align: center;
+  transition: all 0.3s;
 }
 
 .audit-btn.approve {
-  background: #4caf50;
+  background: var(--action-green);
   color: white;
 }
 
 .audit-btn.reject {
-  background: #f44336;
+  background: var(--action-red);
   color: white;
+}
+
+.audit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  filter: brightness(1.1);
+}
+
+.audit-btn:active {
+  transform: translateY(1px);
+  filter: brightness(0.9);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.audit-btn.approve:hover {
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.4);
+}
+
+.audit-btn.reject:hover {
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.4);
 }
 
 .fake-identity-selector {
@@ -498,8 +576,10 @@ button {
 .fake-identity-selector select {
   width: 200px;
   padding: 5px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-dark);
   border-radius: 4px;
+  background: var(--bg-darker);
+  color: var(--text-primary);
 }
 
 .scroll-control {
@@ -507,7 +587,7 @@ button {
   align-items: center;
   gap: 5px;
   font-size: 14px;
-  color: #666;
+  color: var(--text-muted);
 }
 
 .scroll-control input[type="checkbox"] {
@@ -520,5 +600,26 @@ button {
   align-items: center;
   gap: 5px;
   cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .chat-header {
+    padding: 5px 10px;
+    height: 32px;  /* 移动端更小的高度 */
+  }
+
+  .chat-header span {
+    font-size: 12px;  /* 更小的字体 */
+  }
+
+  .scroll-control {
+    font-size: 12px;
+    gap: 3px;
+  }
+
+  .scroll-control input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+  }
 }
 </style> 

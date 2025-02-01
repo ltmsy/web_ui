@@ -35,6 +35,8 @@ import ChatRoom from '@/components/ChatRoom.vue';
   gap: 20px;
   min-height: 0; /* 重要：允许内容在flex容器中收缩 */
   overflow: hidden; /* 防止内容溢出 */
+  border: 1px solid var(--border-gold);
+  background: var(--bg-darker);
 }
 
 .left-section {
@@ -50,5 +52,10 @@ import ChatRoom from '@/components/ChatRoom.vue';
   flex: 1;
   min-width: 300px;
   overflow: hidden; /* 防止内容溢出 */
+}
+
+.side-menu {
+  background: var(--bg-lighter);
+  border-left: 1px solid var(--border-gold);
 }
 </style> 

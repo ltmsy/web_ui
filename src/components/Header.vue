@@ -44,8 +44,8 @@ const handleLogout = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background: var(--bg-darker);
+  border-bottom: 1px solid var(--border-dark);
 }
 
 .logo img {
@@ -60,7 +60,7 @@ const handleLogout = () => {
 
 .welcome {
   font-size: 14px;
-  color: #666;
+  color: var(--text-gold);
 }
 
 .login-btn, .logout-btn {
@@ -69,24 +69,41 @@ const handleLogout = () => {
   border: none;
   cursor: pointer;
   font-size: 14px;
-  transition: all 0.3s;
 }
 
 .login-btn {
-  background: #1890ff;
+  background: var(--action-gold);
   color: white;
 }
 
-.login-btn:hover {
-  background: #40a9ff;
-}
-
 .logout-btn {
-  background: #f5f5f5;
-  color: #666;
+  background: var(--action-red);
+  color: white;
 }
 
-.logout-btn:hover {
-  background: #e8e8e8;
+:global(.el-message), :global(.el-message-box) {
+  background: var(--message-bg) !important;
+  border: 1px solid var(--message-border) !important;
+  box-shadow: var(--message-shadow) !important;
+  color: var(--text-primary) !important;
+}
+
+:global(.el-message__content) {
+  color: var(--text-primary) !important;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0 10px;
+  }
+
+  .welcome {
+    font-size: 12px;
+  }
+
+  .login-btn, .logout-btn {
+    padding: 4px 12px;
+    font-size: 12px;
+  }
 }
 </style> 

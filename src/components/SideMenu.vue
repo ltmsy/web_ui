@@ -11,7 +11,12 @@
         <span>老师简介</span>
       </div>
       <div class="announcement">
-        <span class="announcement-text">{{ announcement }}</span>
+        <div class="announcement-content">
+          <span class="announcement-icon material-icons">
+            campaign
+          </span>
+          <span class="announcement-text">{{ announcement }}</span>
+        </div>
       </div>
     </div>
 
@@ -72,42 +77,111 @@ const closeModal = () => {
 
 <style scoped>
 .side-menu {
-  background: #f5f5f5;
-  border-radius: 4px;
-  padding: 10px;
+  padding: 2px;
+  background: var(--bg-darker);
+  border-radius: 8px;
+  border: 1px solid var(--border-dark);
 }
 
 .menu-items {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 2px;
 }
 
 .menu-item {
-  padding: 8px 15px;
-  background: #fff;
-  border-radius: 4px;
+  padding: 4px 8px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s;
-  white-space: nowrap;
+  color: var(--text-gold);
+  transition: all 0.2s;
 }
 
 .menu-item:hover {
-  background: #e0e0e0;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.menu-item:active {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .announcement {
   flex: 1;
-  background: #fff;
-  padding: 8px 15px;
-  border-radius: 4px;
+  position: relative;
   overflow: hidden;
+  padding: 4px 8px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+}
+
+.announcement-content {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 20px;
+  height: 24px;
+}
+
+.announcement-icon {
+  font-size: 18px;
+  animation: pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+  z-index: 2;
+  color: var(--text-gold);
+  position: relative;
+  background: var(--bg-darker);
+  padding-right: 10px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
 }
 
 .announcement-text {
+  position: absolute;
+  left: 35px;
+  right: 0;
   display: block;
   white-space: nowrap;
-  animation: marquee 20s linear infinite;
+  animation: marquee 30s linear infinite;
+  color: var(--text-gold);
+}
+
+.announcement-content::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 45px;
+  background: linear-gradient(to right, var(--bg-darker) 60%, transparent);
+  z-index: 1;
+}
+
+.announcement-content::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  background: linear-gradient(to left, var(--bg-darker) 60%, transparent);
 }
 
 @keyframes marquee {
@@ -125,7 +199,8 @@ const closeModal = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -135,23 +210,60 @@ const closeModal = () => {
 .modal-content {
   position: relative;
   max-width: 80%;
-  max-height: 80%;
+  max-height: 80vh;
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  padding: 20px;
 }
 
 .modal-content img {
   max-width: 100%;
-  max-height: 100%;
+  height: auto;
+  border-radius: 8px;
 }
 
 .close-btn {
   position: absolute;
-  top: -20px;
-  right: -20px;
+  top: -40px;
+  right: 0;
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: #fff;
-  border: none;
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  font-size: 20px;
+  line-height: 30px;
+  text-align: center;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  transform: rotate(90deg);
+  background: var(--metal-dark);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .menu-items {
+    flex-wrap: wrap;
+  }
+
+  .menu-item {
+    font-size: 14px;
+    padding: 4px 8px;
+  }
+
+  .announcement {
+    width: 100%;
+    margin-top: 2px;
+  }
 }
 </style> 
