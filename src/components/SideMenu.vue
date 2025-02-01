@@ -13,7 +13,6 @@
       <div class="announcement">
         <div class="announcement-content">
           <span class="announcement-icon material-icons">
-            campaign
           </span>
           <span class="announcement-text">{{ announcement }}</span>
         </div>
